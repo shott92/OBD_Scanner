@@ -1,0 +1,25 @@
+{
+  "J1979": [
+    {
+      "name": "Read RPM",
+      "obd_command": "RPM",
+      "hex": "010C"
+    },
+    {
+      "name": "Read Vehicle Speed",
+      "obd_command": "SPEED",
+      "hex": "010D"
+    },
+    {
+      "name": "Read Coolant Temp",
+      "obd_command": "COOLANT_TEMP",
+      "hex": "0105"
+    },
+    {
+      "name": "Get DTCs",
+      "obd_command": "GET_DTC",
+      "hex": "03"
+    }
+  ],
+  "UDS": []
+}

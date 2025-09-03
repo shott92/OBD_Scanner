@@ -1,55 +1,70 @@
 from PyQt5.QtCore import QObject, pyqtSignal
-from .adapters.elm327_adapter import ELM327Adapter
-from .adapters.doip_adapter import DoIPAdapter
+import time
 
 class CommunicationManager(QObject):
+    """
+    Manages communication with a vehicle adapter in a separate thread.
+    """
     connection_status = pyqtSignal(bool, str)
     log_message = pyqtSignal(str)
     data_received = pyqtSignal(str, str)
 
-    def __init__(self):
+    def __init__(self, adapter):
         super().__init__()
-        self.adapter = None
+        self.adapter = adapter
+        self._is_running = False
 
-    def connect_vehicle(self, config):
-        adapter_type = config.get("adapter_type")
-        self.log_message.emit(f"INFO: Attempting to connect via {adapter_type}...")
+    def run(self):
+        """
+        The main worker method for the thread. Connects to the adapter
+        and enters a loop to keep the thread alive for command execution.
+        """
+        self._is_running = True
+        self.log_message.emit(f"INFO: Worker thread started. Attempting to connect...")
 
         try:
-            if adapter_type == "ELM327":
-                self.adapter = ELM327Adapter(config.get("port"))
-            elif adapter_type == "DoIP":
-                self.adapter = DoIPAdapter(config.get("ip"), config.get("address"))
-            else:
-                self.log_message.emit("ERROR: Unknown adapter type selected.")
-                return
-
-            if self.adapter.connect():
-                self.log_message.emit(f"SUCCESS: Connection established.")
-                self.connection_status.emit(True, f"Connected via {adapter_type}")
-            else:
+            if not self.adapter.connect():
                 raise ConnectionError("Adapter failed to connect.")
+
+            self.log_message.emit("SUCCESS: Connection established.")
+            self.connection_status.emit(True, f"Connected via {self.adapter.get_type_string()}")
+
         except Exception as e:
-            self.log_message.emit(f"ERROR: Failed to connect. {e}")
+            self.log_message.emit(f"ERROR: Failed to connect: {e}")
             self.connection_status.emit(False, "Connection Failed")
-            self.adapter = None
-    
-    def disconnect_vehicle(self):
+            self._is_running = False # Stop running if connection fails
+            return
+
+        # Keep the thread alive
+        while self._is_running:
+            time.sleep(0.1)
+
+        self.log_message.emit("INFO: Worker thread finished.")
+
+    def stop(self):
+        """
+        Stops the worker thread loop and disconnects the adapter.
+        """
+        self.log_message.emit("INFO: Stopping worker...")
+        self._is_running = False
         if self.adapter:
             self.adapter.disconnect()
-            self.adapter = None
         self.log_message.emit("INFO: Disconnected.")
-        self.connection_status.emit(False, "Disconnected")
 
-    def execute_command(self, cmd_name, cmd):
+    def execute_command(self, cmd_name, command_obj, command_hex):
+        """
+        Executes a command using the connected adapter.
+        """
         if not self.adapter or not self.adapter.is_connected:
             self.log_message.emit("ERROR: Not connected. Cannot send command.")
             return
 
-        self.log_message.emit(f"TX: [{cmd_name}]")
-        
-        # ELM327 commands are objects, DoIP commands are hex strings
-        response = self.adapter.send_receive(cmd_name, cmd)
-        
-        self.log_message.emit(f"RX: {response}")
-        self.data_received.emit(cmd_name, str(response))
+        self.log_message.emit(f"TX: [{cmd_name}] - {command_hex or command_obj.name}")
+
+        try:
+            # The adapter's send_receive method will handle the different command types
+            response = self.adapter.send_receive(cmd_name, command_obj, command_hex)
+            self.log_message.emit(f"RX: {response}")
+            self.data_received.emit(cmd_name, str(response))
+        except Exception as e:
+            self.log_message.emit(f"ERROR: Failed to execute command '{cmd_name}': {e}")
