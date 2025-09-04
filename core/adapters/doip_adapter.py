@@ -2,7 +2,7 @@ from .base_adapter import BaseAdapter
 from doipclient import DoIPClient
 from doipclient.connectors import DoIPClientUDSConnector
 from udsoncan.client import Client
-from udsoncan.configs import defaultConfig
+from udsoncan.configs import default_client_config
 
 class DoIPAdapter(BaseAdapter):
     def __init__(self, vehicle_ip, ecu_addr):
@@ -15,7 +15,7 @@ class DoIPAdapter(BaseAdapter):
         try:
             # Note: For real hardware, you may need to add error handling and timeouts
             connector = DoIPClientUDSConnector(DoIPClient(self._ip, self._addr))
-            self._client = Client(connector, config=defaultConfig)
+            self._client = Client(connector, config=default_client_config)
             self._client.open()
             self._connection_open = self._client.is_open()
             return self._connection_open
