@@ -21,5 +21,30 @@
       "hex": "03"
     }
   ],
-  "UDS": []
+  "UDS": [
+    {
+      "name": "Start Default Session",
+      "hex": "1001"
+    },
+    {
+      "name": "Start Extended Session",
+      "hex": "1003"
+    },
+    {
+      "name": "ECU Hard Reset",
+      "hex": "1101"
+    },
+    {
+      "name": "Read VIN",
+      "hex": "22F190"
+    },
+    {
+      "name": "Read ECU Serial Number",
+      "hex": "22F18C"
+    },
+    {
+        "name": "Tester Present",
+        "hex": "3E00"
+    }
+  ]
 }
