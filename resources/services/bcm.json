@@ -1,0 +1,70 @@
+{
+    "routines": [
+        {
+            "name": "DPF Regeneration",
+            "id": 513,
+            "description": "Forces Diesel Particulate Filter regeneration."
+        },
+        {
+            "name": "Brake Bleed Sequence",
+            "id": 517,
+            "description": "Actuates ABS pump for bleeding."
+        },
+        {
+            "name": "Battery Reset",
+            "id": 521,
+            "description": "Reset BMS after battery replacement."
+        }
+    ],
+    "io_controls": [
+        {
+            "name": "Front Left Indicator",
+            "id": 16385,
+            "states": [
+                "ON",
+                "OFF"
+            ]
+        },
+        {
+            "name": "Horn Output",
+            "id": 16389,
+            "states": [
+                "ON",
+                "OFF"
+            ]
+        },
+        {
+            "name": "Cooling Fan High",
+            "id": 16400,
+            "states": [
+                "ON",
+                "OFF"
+            ]
+        }
+    ],
+    "coding": [
+        {
+            "name": "Daytime Running Lights",
+            "id": 256,
+            "type": "bool",
+            "value": true
+        },
+        {
+            "name": "Auto-Lock at Speed",
+            "id": 257,
+            "type": "bool",
+            "value": false
+        },
+        {
+            "name": "Tire Configuration",
+            "id": 261,
+            "type": "enum",
+            "options": [
+                "18 inch",
+                "19 inch",
+                "20 inch"
+            ],
+            "value": "19 inch"
+        }
+    ]
+}

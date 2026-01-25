@@ -11,3 +11,6 @@ class LogWidget(QGroupBox):
 
     def append_message(self, message):
         self.log_box.append(message)
+
+    def add_log(self, message):
+        self.append_message(message)

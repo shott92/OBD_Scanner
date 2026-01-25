@@ -1,31 +1,41 @@
 import obd
-from .base_adapter import BaseAdapter
+from ..hal.vci_interface import VCIInterface
 
-class ELM327Adapter(BaseAdapter):
-    def __init__(self, port):
+class ELM327Adapter(VCIInterface):
+    def __init__(self, port, config=None):
+        super().__init__(config)
         self._port = port
         self._connection = None
 
-    def connect(self):
+    def connect(self) -> bool:
         try:
             self._connection = obd.OBD(self._port)
-            return self._connection.is_connected()
+            self._is_connected = self._connection.is_connected()
+            return self._is_connected
         except Exception:
+            self._is_connected = False
             return False
 
     def disconnect(self):
         if self.is_connected:
             self._connection.close()
             self._connection = None
+        self._is_connected = False
 
-    @property
-    def is_connected(self):
-        return self._connection and self._connection.is_connected()
+    def send_frame(self, data: bytes, protocol: str = "CAN", **kwargs):
+        # ELM327 typically takes string commands or hex
+        pass
+
+    def read_frame(self, timeout: float = 0.1):
+        return None
 
     def send_receive(self, command_name, command):
+        """Legacy helper for existing UI"""
         if not self.is_connected:
             return "ERROR: Not connected"
 
+        # 'command' here is expected to be an obd.commands object in the legacy code
+        # We need to handle raw vs object if we change the flow, but staying compatible for now
         response = self._connection.query(command)
 
         if response.is_null():

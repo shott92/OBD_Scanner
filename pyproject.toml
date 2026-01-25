@@ -1,0 +1,15 @@
+[project]
+name = "CANdy_Diag_Pro"
+version = "2.1.0"
+description = "Unified Automotive Engineering & Competitor Analysis Platform"
+requires-python = ">=3.13"
+dependencies = [
+    "PyQt5",
+    "obd",
+    "pyserial",
+    "doipclient",
+    "udsoncan",
+]
+
+[tool.setuptools]
+packages = ["core", "gui"]

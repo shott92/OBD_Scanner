@@ -10,6 +10,16 @@ DEFAULT_COMMANDS_J1979 = {
     "Get DTCs": (obd.commands.GET_DTC, "03"),
 }
 
+DEFAULT_COMMANDS_UDS = {
+    "Session Control (Diagnostic)": "1003",
+    "Session Control (Programming)": "1002",
+    "ECU Reset (Hard)": "1101",
+    "ECU Reset (KeyOffOn)": "1102",
+    "Read VIN (DID F190)": "22F190",
+    "Read HW PN (DID F191)": "22F191",
+    "Tester Present": "3E80",
+}
+
 class CommandWidget(QGroupBox):
     """Widget for holding and managing command buttons."""
     # Signal emits: command_name, obd.Command object, command_hex_payload
@@ -31,6 +41,13 @@ class CommandWidget(QGroupBox):
         # UDS / Custom Section
         self.uds_group = QGroupBox("ISO 14229 UDS / Custom")
         self.uds_layout = QVBoxLayout()
+        
+        # Pre-populate UDS
+        for name, cmd_hex in DEFAULT_COMMANDS_UDS.items():
+            btn = QPushButton(name)
+            btn.clicked.connect(lambda _, n=name, c_hex=cmd_hex: self.command_triggered.emit(n, None, c_hex))
+            self.uds_layout.addWidget(btn)
+        
         add_cmd_button = QPushButton("+ Add New Command")
         add_cmd_button.clicked.connect(self.show_add_command_dialog)
         self.uds_layout.addWidget(add_cmd_button)

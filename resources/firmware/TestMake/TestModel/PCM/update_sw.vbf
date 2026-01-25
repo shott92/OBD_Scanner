@@ -1,0 +1,12 @@
+
+vbf_version = 2.0;
+
+header {
+    sw_part_number = "SW-123-456-AA";
+    sw_version = "1.0.0";
+    network = "CAN_HS";
+    ecu_address = 0x7E0;
+    
+    // File Checksum
+    file_checksum = 0x12345678;
+}

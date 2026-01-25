@@ -1,5 +1,8 @@
 PyQt5
-python-obd
+obd
 pyserial
-pydoipclient
+doipclient
 udsoncan
+matplotlib
+cantools
+requests
